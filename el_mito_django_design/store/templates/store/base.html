@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="EL MITO — considered essentials for everyday living.">
+  <title>{% block title %}EL MITO — Clothing for a more meaningful tomorrow{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'store/site.css' %}">
+</head>
+<body>
+  <div class="announcement">Considered essentials. Made for every day. <span>Complimentary shipping over ₹2,999</span></div>
+  <header class="site-header">
+    <a class="wordmark" href="{% url 'home' %}">EL MITO<span class="wordmark-dot">.</span></a>
+    <nav class="desktop-nav"><a href="{% url 'shop' %}">Shop</a><a href="{% url 'shop' %}?category=Oversized">Oversized</a><a href="{% url 'shop' %}?category=Essentials">Essentials</a><a href="{% url 'about' %}">Our Story</a></nav>
+    <div class="header-actions"><form class="search-form" action="{% url 'shop' %}"><input name="q" placeholder="Search" aria-label="Search products"><button aria-label="Search">⌕</button></form><a class="icon-link" href="{% url 'login' %}" aria-label="Account">♙</a><a class="icon-link bag-link" href="{% url 'cart' %}" aria-label="Shopping bag">♧<span>{{ cart_count }}</span></a><button class="menu-toggle" aria-label="Open menu" onclick="document.body.classList.toggle('menu-open')">☰</button></div>
+  </header>
+  <nav class="mobile-nav"><a href="{% url 'shop' %}">Shop all</a><a href="{% url 'shop' %}?category=Oversized">Oversized</a><a href="{% url 'shop' %}?category=Essentials">Essentials</a><a href="{% url 'about' %}">Our Story</a></nav>
+  {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer">
+    <div class="footer-shell">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <span class="footer-kicker">MADE FOR THE EVERYDAY</span>
+          <a class="wordmark footer-mark" href="{% url 'home' %}">EL MITO<span class="wordmark-dot">.</span></a>
+          <p>Fewer, better things.<br>Worn your way, again and again.</p>
+          <a class="footer-shop-link" href="{% url 'shop' %}">Discover the collection <span>↗</span></a>
+        </div>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <div><b>Explore</b><a href="{% url 'shop' %}">Shop all</a><a href="{% url 'shop' %}?category=Oversized">Oversized</a><a href="{% url 'shop' %}?category=Essentials">Essentials</a><a href="{% url 'about' %}">Our story</a></div>
+          <div><b>Client care</b><a href="{% url 'contact' %}">Contact</a><a href="{% url 'orders' %}">Track an order</a><a href="{% url 'contact' %}">Shipping & returns</a></div>
+          <div><b>Follow</b><a href="#">Instagram <span>↗</span></a><a href="#">Pinterest <span>↗</span></a></div>
+        </nav>
+      </div>
+      <div class="footer-bottom"><span>© 2026 EL MITO Studio</span><span>Thoughtfully made. Intentionally worn.</span><div><a href="#">Privacy</a><a href="#">Terms</a></div></div>
+    </div>
+  </footer>
+  <script src="{% static 'store/site.js' %}"></script>
+</body></html>

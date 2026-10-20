@@ -1,0 +1,9 @@
+<article class="product-card">
+  <a class="product-image-wrap" href="{% url 'product' p.slug %}">
+    {% if p.badge %}<span class="product-badge">{{ p.badge }}</span>{% endif %}
+    <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy">
+    <span class="quick-view">View product <span>↗</span></span>
+  </a>
+  <div class="product-meta"><div><a class="product-name" href="{% url 'product' p.slug %}">{{ p.name }}</a><div class="product-sub">{{ p.color }} · {{ p.category }}</div></div><span class="product-price">{{ p.price_display }}</span></div>
+  <div class="swatches"><i class="swatch swatch-black"></i><i class="swatch swatch-olive"></i><i class="swatch swatch-stone"></i></div>
+</article>
