@@ -1,0 +1,45 @@
+# Environment files and secrets (keep the documented template)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+secrets/
+**/secrets/
+*.secret
+*.secrets
+*credentials*.json
+service-account*.json
+
+# Private keys, certificates, and credential stores
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+
+# Local databases and uploads
+*.sqlite3
+*.db
+media/
+**/media/
+
+# Python and Django generated files
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+staticfiles/
+
+# Virtual environments and local tooling
+venv/
+.venv/
+env/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
