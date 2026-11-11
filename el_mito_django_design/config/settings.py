@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
     "django.contrib.sessions", "django.contrib.messages", "django.contrib.staticfiles",
     "apps.core", "apps.accounts", "apps.products", "apps.cart", "apps.orders",
-    "apps.payments", "apps.notifications", "store",
+    "apps.payments", "apps.notifications", "store", "storages",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware", "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -71,10 +71,35 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))).expanduser().resolve()
 IS_RENDER = bool(_render_host)
 WHITENOISE_AUTOREFRESH = not IS_RENDER
+MEDIA_STORAGE = os.environ.get("MEDIA_STORAGE", "filesystem").strip().lower()
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if IS_RENDER and not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+if MEDIA_STORAGE == "s3":
+    bucket_name = os.environ.get("AWS_STORAGE_BUCKET_NAME", "").strip()
+    if not bucket_name:
+        raise RuntimeError("Set AWS_STORAGE_BUCKET_NAME when MEDIA_STORAGE=s3.")
+    media_options = {
+        "bucket_name": bucket_name,
+        "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH", True),
+        "file_overwrite": True,
+    }
+    for option, variable in (
+        ("access_key", "AWS_ACCESS_KEY_ID"),
+        ("secret_key", "AWS_SECRET_ACCESS_KEY"),
+        ("region_name", "AWS_S3_REGION_NAME"),
+        ("endpoint_url", "AWS_S3_ENDPOINT_URL"),
+    ):
+        value = os.environ.get(variable, "").strip()
+        if value:
+            media_options[option] = value
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": media_options,
+    }
+elif MEDIA_STORAGE != "filesystem":
+    raise RuntimeError("MEDIA_STORAGE must be either 'filesystem' or 's3'.")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"

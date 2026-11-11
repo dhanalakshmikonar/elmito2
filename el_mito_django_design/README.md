@@ -14,6 +14,6 @@ The admin at `/admin/` manages categories, product records, multiple product ima
 
 ## Deployment configuration
 
-Configure `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `DATABASE_URL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` and SMTP settings in the host environment. On Render, use persistent storage for product media by setting `MEDIA_ROOT` and `SERVE_MEDIA=True`; run migrations as part of deployment. Shipping is configured at ₹0.
+Configure `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `DATABASE_URL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` and SMTP settings in the host environment. For shared local/Render uploads, set `MEDIA_STORAGE=s3` and configure the same S3-compatible bucket and credentials in local `.env` and Render environment variables. Set the bucket endpoint and region for providers such as AWS S3 or Cloudflare R2. Keep credentials out of Git. Run `python manage.py sync_media_to_storage` locally after configuring the bucket to copy existing files while preserving their names. Product/category records remain in each environment's database; local admin record changes do not sync to Render. For filesystem media instead, Render needs a persistent disk mounted at `MEDIA_ROOT` and `SERVE_MEDIA=True`; the default Render filesystem is ephemeral. Run migrations as part of deployment. Shipping is configured at ₹0.
 
 Never commit `.env` or payment secrets.
