@@ -75,6 +75,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))).expanduser().resolve()
 IS_RENDER = bool(_render_host)
+SERVE_MEDIA = env_bool("SERVE_MEDIA", IS_RENDER)
 WHITENOISE_AUTOREFRESH = not IS_RENDER
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
