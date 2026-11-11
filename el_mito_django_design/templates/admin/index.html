@@ -1,4 +1,5 @@
-{% extends "admin/index.html" %}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
 {% block content %}
 {% if dashboard %}
 <section class="elmito-admin-metrics" aria-label="Store overview">
@@ -28,5 +29,9 @@
 </section>
 {% endif %}
 {% endif %}
-{{ block.super }}
+{% if app_list %}
+  {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+{% else %}
+  <p>{% translate "You don't have permission to view or edit anything." %}</p>
+{% endif %}
 {% endblock %}

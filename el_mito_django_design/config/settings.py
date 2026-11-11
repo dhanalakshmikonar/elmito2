@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import sys
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -117,6 +118,14 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_RENDER and not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 CSRF_TRUSTED_ORIGINS += [f"https://{host}" for host in ALLOWED_HOSTS if host not in {"localhost", "127.0.0.1"}]
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler", "stream": sys.stderr}},
+    "loggers": {
+        "django.request": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+    },
+}
 OTP_LENGTH = 6
 OTP_EXPIRY_SECONDS = 300
 OTP_MAX_ATTEMPTS = 5

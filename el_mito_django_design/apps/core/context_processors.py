@@ -7,6 +7,10 @@ from apps.products.models import Category
 
 
 def site(request):
+    # The Django admin login and pages do not need storefront navigation/cart
+    # context. Avoid coupling admin rendering to storefront database queries.
+    if request.path_info.startswith("/admin/"):
+        return {}
     digits = re.sub(r"\D", "", settings.WHATSAPP_PROVIDER_NUMBER or "")
     if len(digits) == 10:
         digits = "91" + digits

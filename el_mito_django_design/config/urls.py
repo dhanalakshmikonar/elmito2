@@ -12,5 +12,12 @@ urlpatterns = [
  path('privacy-policy/', views.legal, {'page':'privacy'}, name='privacy'), path('terms-and-conditions/', views.legal, {'page':'terms'}, name='terms'), path('returns-and-refunds/', views.legal, {'page':'returns'}, name='returns'),
  path('account/', include('apps.accounts.urls')), path('cart/', include('apps.cart.urls')), path('', include('apps.orders.urls')), path('', include('apps.payments.urls')), path('', include('apps.products.urls')), path('', include('apps.core.urls')),
 ]
-if settings.DEBUG or settings.SERVE_MEDIA: urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG or settings.SERVE_MEDIA:
+    # Render's free filesystem is ephemeral. This serves media committed with
+    # the deployment; use object storage for uploads that must persist.
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+        insecure_serving=settings.SERVE_MEDIA and not settings.DEBUG,
+    )
 
