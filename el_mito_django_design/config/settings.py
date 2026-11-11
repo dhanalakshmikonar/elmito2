@@ -31,7 +31,6 @@ CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
 if _render_host:
     CSRF_TRUSTED_ORIGINS.append(f"https://{_render_host}")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8000")
-MEDIA_STORAGE = os.environ.get("MEDIA_STORAGE", "filesystem").strip().lower()
 
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
@@ -39,10 +38,6 @@ INSTALLED_APPS = [
     "apps.core", "apps.accounts", "apps.products", "apps.cart", "apps.orders",
     "apps.payments", "apps.notifications", "store",
 ]
-if MEDIA_STORAGE == "s3":
-    INSTALLED_APPS.append("storages")
-elif MEDIA_STORAGE != "filesystem":
-    raise RuntimeError("MEDIA_STORAGE must be either 'filesystem' or 's3'.")
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware", "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware", "django.middleware.common.CommonMiddleware",
@@ -82,28 +77,6 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if IS_RENDER and not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
-if MEDIA_STORAGE == "s3":
-    bucket_name = os.environ.get("AWS_STORAGE_BUCKET_NAME", "").strip()
-    if not bucket_name:
-        raise RuntimeError("Set AWS_STORAGE_BUCKET_NAME when MEDIA_STORAGE=s3.")
-    media_options = {
-        "bucket_name": bucket_name,
-        "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH", True),
-        "file_overwrite": True,
-    }
-    for option, variable in (
-        ("access_key", "AWS_ACCESS_KEY_ID"),
-        ("secret_key", "AWS_SECRET_ACCESS_KEY"),
-        ("region_name", "AWS_S3_REGION_NAME"),
-        ("endpoint_url", "AWS_S3_ENDPOINT_URL"),
-    ):
-        value = os.environ.get(variable, "").strip()
-        if value:
-            media_options[option] = value
-    STORAGES["default"] = {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": media_options,
-    }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
