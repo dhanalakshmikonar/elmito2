@@ -30,13 +30,18 @@ CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
 if _render_host:
     CSRF_TRUSTED_ORIGINS.append(f"https://{_render_host}")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8000")
+MEDIA_STORAGE = os.environ.get("MEDIA_STORAGE", "filesystem").strip().lower()
 
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
     "django.contrib.sessions", "django.contrib.messages", "django.contrib.staticfiles",
     "apps.core", "apps.accounts", "apps.products", "apps.cart", "apps.orders",
-    "apps.payments", "apps.notifications", "store", "storages",
+    "apps.payments", "apps.notifications", "store",
 ]
+if MEDIA_STORAGE == "s3":
+    INSTALLED_APPS.append("storages")
+elif MEDIA_STORAGE != "filesystem":
+    raise RuntimeError("MEDIA_STORAGE must be either 'filesystem' or 's3'.")
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware", "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware", "django.middleware.common.CommonMiddleware",
@@ -71,7 +76,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))).expanduser().resolve()
 IS_RENDER = bool(_render_host)
 WHITENOISE_AUTOREFRESH = not IS_RENDER
-MEDIA_STORAGE = os.environ.get("MEDIA_STORAGE", "filesystem").strip().lower()
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if IS_RENDER and not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage"},
@@ -98,8 +102,6 @@ if MEDIA_STORAGE == "s3":
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": media_options,
     }
-elif MEDIA_STORAGE != "filesystem":
-    raise RuntimeError("MEDIA_STORAGE must be either 'filesystem' or 's3'.")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
