@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from apps.cart.services import cart as cart_service
@@ -34,7 +35,13 @@ def home(request):
         "new_arrivals": [_card(p) for p in arrivals], "product_display": collection_tiles})
 def category_page(request, audience):
     images = {"men": ["store/campaign/Gemini_Generated_Image_vwhd25vwhd25vwhd.png", "store/campaign/Gemini_Generated_Image_ny2xajny2xajny2x.png", "store/campaign/Gemini_Generated_Image_zi8zozi8zozi8zoz.png", "store/campaign/Gemini_Generated_Image_ctv1fkctv1fkctv1.png", "store/campaign/Minimalist Streetwear Editorial Couple.png"], "women": ["store/campaign/Gemini_Generated_Image_z1ujf2z1ujf2z1uj.png", "store/campaign/Minimalist Streetwear Editorial Couple.png", "store/campaign/Gemini_Generated_Image_ctv1fkctv1fkctv1.png", "store/campaign/Gemini_Generated_Image_z1ujf2z1ujf2z1uj.png", "store/campaign/Gemini_Generated_Image_ctv1fkctv1fkctv1.png"], "kids": ["store/campaign/kids-campaign.jpeg"] * 5}
-    products = catalog.visible_products().filter(audience__in=[audience, "all"])
+    # ``all`` is the model default for older admin-created records. Resolve
+    # those records through their selected Men/Women/Kids category so a
+    # product assigned to Men cannot leak into the Women and Kids pages.
+    products = catalog.visible_products().filter(
+        Q(audience=audience)
+        | Q(audience="all", category__slug=audience)
+    ).distinct()
     return render(request, "store/category.html", {"category_name": audience.title(), "placeholders": [{"image": x} for x in images[audience]], "products": [_card(p) for p in products]})
 
 def shop(request):
