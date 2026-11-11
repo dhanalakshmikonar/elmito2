@@ -27,6 +27,11 @@ service-account*.json
 *.db
 media/
 **/media/
+!el_mito_django_design/media/
+!el_mito_django_design/media/categories/
+!el_mito_django_design/media/products/
+!el_mito_django_design/media/categories/**
+!el_mito_django_design/media/products/**
 
 # Python and Django generated files
 __pycache__/
