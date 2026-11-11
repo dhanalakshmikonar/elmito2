@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 from apps.orders import views as order_views
 from store import views
 urlpatterns = [
@@ -13,11 +13,14 @@ urlpatterns = [
  path('account/', include('apps.accounts.urls')), path('cart/', include('apps.cart.urls')), path('', include('apps.orders.urls')), path('', include('apps.payments.urls')), path('', include('apps.products.urls')), path('', include('apps.core.urls')),
 ]
 if settings.DEBUG or settings.SERVE_MEDIA:
-    # Render's free filesystem is ephemeral. This serves media committed with
-    # the deployment; use object storage for uploads that must persist.
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT,
-        insecure_serving=settings.SERVE_MEDIA and not settings.DEBUG,
+    # django.conf.urls.static.static() deliberately returns no routes when
+    # DEBUG=False. Add an explicit route so bundled media works on Render.
+    urlpatterns.insert(
+        0,
+        re_path(
+            r"^media/(?P<path>.*)$",
+            serve,
+            {"document_root": settings.MEDIA_ROOT},
+        ),
     )
 
