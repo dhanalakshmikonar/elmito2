@@ -1,0 +1,4 @@
+{% extends 'store/base.html' %}{% load static %}{% block title %}{{ category_name }} — EL MITO APPARELS{% endblock %}{% block content %}
+{% if category_name == 'Kids' %}<section class="category-campaign" aria-label="EL MITO kids campaign"><video autoplay muted loop playsinline preload="metadata" poster="{% static 'store/campaign/kids-campaign.jpeg' %}"><source src="{% static 'store/campaign/PixVerse_V6_Image_Text_540P_Create_a_beautiful.mp4' %}" type="video/mp4"></video></section>{% endif %}
+<section class="category-heading"><h1>{{ category_name }}</h1></section><section class="section shop-grid-section"><div class="product-grid shop-grid">{% for p in products %}{% include 'store/_product_card.html' with p=p %}{% empty %}<p class="empty-state">New pieces coming soon.</p>{% endfor %}</div></section>
+{% endblock %}
