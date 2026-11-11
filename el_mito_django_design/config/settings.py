@@ -69,9 +69,13 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))).expanduser().resolve()
 IS_RENDER = bool(_render_host)
-SERVE_MEDIA = env_bool("SERVE_MEDIA", IS_RENDER)
+# Render free instances have no persistent media disk. Serve the files bundled
+# with the deployment, regardless of stale MEDIA_ROOT/SERVE_MEDIA env values.
+MEDIA_ROOT = (BASE_DIR / "media").resolve() if IS_RENDER else Path(
+    os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
+).expanduser().resolve()
+SERVE_MEDIA = True if IS_RENDER else env_bool("SERVE_MEDIA", False)
 WHITENOISE_AUTOREFRESH = not IS_RENDER
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
